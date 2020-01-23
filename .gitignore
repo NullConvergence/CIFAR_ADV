@@ -1,7 +1,7 @@
 # folders
-./cifar-data
-./models
-./wandb
+cifar-data/
+models/
+wandb/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

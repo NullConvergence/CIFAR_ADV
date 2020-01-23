@@ -1,0 +1,37 @@
+seed: 0
+
+gpus: [0,1]
+
+model:
+  custom: false
+  tvision:
+    name: 'resnet18'
+    args: {}
+
+data:
+  flag: '10'
+  dir: './cifar-data'
+  batch_size: 128
+
+
+train:
+  epochs: 100
+  lr: 0.1
+  lr_scheduler: 'cyclic'
+  lr_min: 0.
+  lr_max: 0.2
+  weight_decay: 0.00005
+  momentum: 0.9
+
+opt:
+  level: 'O2'
+  loss_scale: 1.0
+  store: true
+
+logger:
+  wandb: true
+  project: 'CIFAR10N'
+  run: 'RESNET18-CLEAN'
+
+save:
+  epochs: 10
