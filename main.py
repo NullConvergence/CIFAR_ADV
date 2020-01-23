@@ -25,7 +25,7 @@ def main():
                                          cnfg['data']['batch_size'])
     # initialization
     utils.set_seed(cnfg['seed'])
-    device = torch.device("cuda:0")
+    device = torch.device('cuda:0') if cnfg['gpu'] is None else torch.device(cnfg['gpu'])
     logger = Logger(cnfg)
     model = utils.get_model(cnfg['model']).to(device)
     criterion = nn.CrossEntropyLoss()

@@ -1,11 +1,11 @@
 seed: 0
 
-gpus: [1]
+gpu: 'cuda:1'
 
 model:
   custom: false
   tvision:
-    name: 'resnet34'
+    name: 'wide_resnet50_2'
     args: {}
 
 data:
@@ -29,9 +29,9 @@ opt:
   store: true
 
 logger:
-  wandb: true
+  wandb: false
   project: 'CIFAR10N'
-  run: 'RESNET18-CLEAN'
+  run: 'WIDERESNET50-CLEAN'
 
 save:
   epochs: 50
