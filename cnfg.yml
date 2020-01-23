@@ -34,4 +34,4 @@ logger:
   run: 'RESNET18-CLEAN'
 
 save:
-  epochs: 10
+  epochs: 50
