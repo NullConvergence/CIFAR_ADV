@@ -25,9 +25,9 @@ def main():
                                          cnfg['data']['batch_size'])
     # initialization
     utils.set_seed(cnfg['seed'])
-    device = torch.device("cuda")
+    device = torch.device("cuda:0")
     logger = Logger(cnfg)
-    model = utils.get_model(cnfg['model']).cuda()
+    model = utils.get_model(cnfg['model']).to(device)
     criterion = nn.CrossEntropyLoss()
     opt = torch.optim.SGD(model.parameters(),
                           lr=cnfg['train']['lr'],
@@ -38,7 +38,6 @@ def main():
     if cnfg['opt']['level'] == '02':
         amp_args['master_weights'] = cnfg['opt']['store']
     model, opt = amp.initialize(model, opt, **amp_args)
-    # model = nn.DataParallel(model, device_ids=cnfg['gpus'])
     scheduler = utils.get_scheduler(
         opt, cnfg['train'], cnfg['train']['epochs']*len(tr_loader))
     # train+test
@@ -48,9 +47,9 @@ def main():
         # testing
         test(epoch, model, tst_loader, criterion, device, logger)
         # save
-        if epoch % cnfg['save']['epochs'] == 0:
+        if epoch+1 % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
-                + 'RESNET18-CLEAN' + '_' + str(epoch) + '.pth'
+                + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)
             logger.log_model(pth)
 

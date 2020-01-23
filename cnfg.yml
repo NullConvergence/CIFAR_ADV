@@ -1,21 +1,21 @@
 seed: 0
 
-gpus: [0,1]
+gpus: [1]
 
 model:
   custom: false
   tvision:
-    name: 'resnet18'
+    name: 'resnet34'
     args: {}
 
 data:
   flag: '10'
   dir: './cifar-data'
-  batch_size: 128
+  batch_size: 512
 
 
 train:
-  epochs: 100
+  epochs: 200
   lr: 0.1
   lr_scheduler: 'cyclic'
   lr_min: 0.
