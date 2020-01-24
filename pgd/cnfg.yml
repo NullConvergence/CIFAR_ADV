@@ -1,0 +1,47 @@
+seed: 0
+
+gpu: 'cuda:1'
+
+model:
+    custom: false
+    tvision:
+        name: 'resnet18'
+        args: {}
+
+data:
+    flag: '10'
+    dir: './cifar-data'
+    batch_size: 128
+
+
+train:
+    epochs: 200
+    lr: 0.1
+    lr_scheduler: 'cyclic'
+    step: 100
+    milestones: [150, 250]
+    gamma: 0.1
+    lr_min: 0.
+    lr_max: 0.2
+    weight_decay: 0.00005
+    momentum: 0.9
+
+pgd:
+    epsilon: 8.
+    alpha: 2.
+    iter: 8
+    restarts: 1
+    delta-init: 'random'
+
+opt:
+    level: 'O2'
+    loss_scale: 1.0
+    store: true
+
+logger:
+    wandb: true
+    project: 'CIFARPGD'
+    run: 'RESNET18'
+
+save:
+    epochs: 50
