@@ -30,3 +30,7 @@ class Logger:
     def log_model(self, pth):
         if self.dowandb:
             wandb.save(pth)
+
+    def log_kv(self, key, value, step):
+        if self.dowandb:
+            wandb.log({key: value}, commit=False, step=step)

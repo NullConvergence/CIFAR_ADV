@@ -25,7 +25,8 @@ def main():
                                          cnfg['data']['batch_size'])
     # initialization
     utils.set_seed(cnfg['seed'])
-    device = torch.device('cuda:0') if cnfg['gpu'] is None else torch.device(cnfg['gpu'])
+    device = torch.device(
+        'cuda:0') if cnfg['gpu'] is None else torch.device(cnfg['gpu'])
     logger = Logger(cnfg)
     model = utils.get_model(cnfg['model']).to(device)
     criterion = nn.CrossEntropyLoss()
@@ -43,7 +44,8 @@ def main():
     # train+test
     for epoch in range(cnfg['train']['epochs']):
         train(epoch, model, criterion,
-              opt, scheduler, tr_loader, device, logger)
+              opt, scheduler, tr_loader, device, logger,
+              cnfg['train']['lr_scheduler'])
         # testing
         test(epoch, model, tst_loader, criterion, device, logger)
         # save

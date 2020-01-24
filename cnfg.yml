@@ -5,19 +5,22 @@ gpu: 'cuda:1'
 model:
   custom: false
   tvision:
-    name: 'wide_resnet50_2'
+    name: 'resnet18'
     args: {}
 
 data:
   flag: '10'
   dir: './cifar-data'
-  batch_size: 512
+  batch_size: 128
 
 
 train:
   epochs: 200
   lr: 0.1
-  lr_scheduler: 'cyclic'
+  lr_scheduler: 'multistep'
+  step: 100
+  milestones: [150, 250]
+  gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
   weight_decay: 0.00005
@@ -31,7 +34,7 @@ opt:
 logger:
   wandb: true
   project: 'CIFAR10N'
-  run: 'WIDERESNET50-CLEAN'
+  run: 'RESNET18-EXP'
 
 save:
   epochs: 50

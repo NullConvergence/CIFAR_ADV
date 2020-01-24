@@ -36,6 +36,16 @@ def get_scheduler(opt, cnfg, steps):
                                                  max_lr=cnfg['lr_max'],
                                                  step_size_up=steps/2,
                                                  step_size_down=steps/2)
+
+    elif cnfg['lr_scheduler'] == 'step':
+        return torch.optim.lr_scheduler.StepLR(opt,
+                                               step_size=cnfg['step'],
+                                               gamma=cnfg['gamma'])
+
+    elif cnfg['lr_scheduler'] == 'multistep':
+        return torch.optim.lr_scheduler.MultiStepLR(opt,
+                                                    milestones=cnfg['milestones'],
+                                                    gamma=cnfg['gamma'])
     else:
         raise NotImplementedError(
             "[ERROR] The selected scheduler is not implemented")
@@ -49,3 +59,10 @@ def save_model(model, cnf, epoch, path):
         'model': model.state_dict()
     }
     torch.save(state, path)
+
+
+def get_lr(opt):
+    lrs = []
+    for param_group in opt.param_groups:
+        lrs.append(param_group["lr"])
+    return lrs
