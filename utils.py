@@ -23,8 +23,7 @@ def parse_config(path):
 
 def get_model(cnfg):
     if cnfg['custom'] is True:
-        raise NotImplementedError(
-            "[ERROR] Custom models are currently not implemented")
+        return models.get_from_zoo(cnfg['arch'], {})
     else:
         return models.get_tvision(cnfg['tvision']['name'], cnfg['tvision']['args'])
 
