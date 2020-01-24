@@ -2,14 +2,14 @@
 
 # Run
 ```
-$ python -m main
+$ python -m clean.train
 ```
 
 
 
 # Run with nohup
 ```
-$ nohup python -m main &
+$ nohup python -m clean.train &
 ```
 
 and follow the updates with
