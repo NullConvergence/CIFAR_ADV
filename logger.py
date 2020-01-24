@@ -31,6 +31,8 @@ class Logger:
         if self.dowandb:
             wandb.save(pth)
 
-    def log_kv(self, key, value, step):
+    def log_lr(self, values, step):
         if self.dowandb:
-            wandb.log({key: value}, commit=False, step=step)
+            for index, rate in enumerate(values):
+                name = "learning_rate_" + str(index)
+                wandb.log({name: rate}, commit=False, step=step)

@@ -46,4 +46,4 @@ def test(epoch, model, tst_loader,  criterion, device, logger):
 def adjust_lr(opt, sc, log, stp):
     sc.step()
     lr = utils.get_lr(opt)
-    log.log_kv('learning_rate', lr, stp)
+    log.log_lr(lr, stp)
