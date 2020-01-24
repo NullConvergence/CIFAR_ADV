@@ -29,7 +29,7 @@ opt:
   store: true
 
 logger:
-  wandb: false
+  wandb: true
   project: 'CIFAR10N'
   run: 'WIDERESNET50-CLEAN'
 

@@ -47,7 +47,7 @@ def main():
         # testing
         test(epoch, model, tst_loader, criterion, device, logger)
         # save
-        if epoch+1 % cnfg['save']['epochs'] == 0 and epoch > 0:
+        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

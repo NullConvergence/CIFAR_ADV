@@ -9,7 +9,8 @@ class Logger:
             wandb.init(
                 name=cnfg['logger']['run'],
                 project=cnfg['logger']['project'],
-                config=cnfg
+                config=cnfg,
+                reinit=True
             )
 
     def log_train(self, epoch, loss, accuracy, label):
