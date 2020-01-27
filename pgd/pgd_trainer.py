@@ -31,9 +31,9 @@ def train(epoch, model, criterion, opt, scheduler, cnfg,
         ep_loss += loss.item()
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
         if schdl_type == 'cyclic':
-            adjust_lr(opt, scheduler, logger, epoch*batch_idx)
+            utils.adjust_lr(opt, scheduler, logger, epoch*batch_idx)
     if schdl_type != 'cyclic':
-        adjust_lr(opt, scheduler, logger, epoch)
+        utils.adjust_lr(opt, scheduler, logger, epoch)
     logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "clean_training")
 
@@ -68,9 +68,3 @@ def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt):
                     (tst_acc/len(tst_loader))*100, "clean_testing")
     logger.log_test_adversarial(epoch, adv_loss/len(tst_loader),
                                 (adv_acc/len(tst_loader))*100, "pgd_testing")
-
-
-def adjust_lr(opt, sc, log, stp):
-    sc.step()
-    lr = utils.get_lr(opt)
-    log.log_lr(lr, stp)

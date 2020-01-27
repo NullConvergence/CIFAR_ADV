@@ -65,3 +65,9 @@ def get_lr(opt):
     for param_group in opt.param_groups:
         lrs.append(param_group["lr"])
     return lrs
+
+
+def adjust_lr(opt, sc, log, stp):
+    sc.step()
+    lr = get_lr(opt)
+    log.log_lr(lr, stp)
