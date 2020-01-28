@@ -5,8 +5,9 @@ mean = (0.4914, 0.4822, 0.4465)
 std = (0.2471, 0.2435, 0.2616)
 
 
-def get_datasets(flag, dir, batch_size):
-    t_trans, tst_trans = get_transforms()
+def get_datasets(flag, dir, batch_size, apply_transform=True):
+    t_trans, tst_trans = get_transforms() if apply_transform is True \
+        else get_tensor_transforms()
     if flag == "10":
         num_workers = 2
         train_dataset = datasets.CIFAR10(
@@ -34,3 +35,11 @@ def get_transforms():
         transforms.ToTensor(),
         transforms.Normalize(mean, std)])
     return train_transforms, test_transforms
+
+
+def get_tensor_transforms():
+    print('[INFO][DATA] Getting data without transforms')
+    train_transforms = transforms.Compose([
+        transforms.ToTensor()
+    ])
+    return train_transforms, train_transforms
