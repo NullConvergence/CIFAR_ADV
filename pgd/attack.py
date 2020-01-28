@@ -69,6 +69,9 @@ def eval_pgd(model, device, criterion, inpt, target, epsilon, alpha, iter,
 def clamp(X, lower_limit, upper_limit):
     return torch.max(torch.min(X, upper_limit), lower_limit)
 
+# TODO: the following methods are not efficiently called
+# (premature optimization is currently the root of all evil)
+
 
 def get_limits(dev):
     mu = torch.tensor(mean).view(3, 1, 1).to(dev)
