@@ -12,7 +12,7 @@ import utils
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./pgd/cnfg.yml', type=str)
+    parser.add_argument('--config', default='./mixed/cnfg.yml', type=str)
     return parser.parse_args()
 
 
@@ -42,20 +42,47 @@ def main():
     model, opt = amp.initialize(model, opt, **amp_args)
     scheduler = utils.get_scheduler(
         opt, cnfg['train'], cnfg['train']['epochs']*len(tr_loader))
+
     # train+test
+    every_n = cnfg['mixed']['every_n']
+    buff, adv_buff = 0, False
     for epoch in range(cnfg['train']['epochs']):
-        if epoch < cnfg['mixed']['adv_epochs']:
-            print('[INFO][TRAIN] \t Training with Adversarial Examples')
-            pgd.train(epoch, model, criterion,
-                      opt, scheduler, cnfg, tr_loader, device, logger,
-                      cnfg['train']['lr_scheduler'])
+        if every_n is True:
+            # we start by training with adversarial examples
+            # for a clean training start, write 'epoch +1'
+            print(epoch % cnfg['mixed']['n'])
+            if epoch % cnfg['mixed']['n'] == 0:
+                # start adv training
+                adv_buff = True
+                buff = 0
+            if adv_buff is True and buff < cnfg['mixed']['adv_epochs']:
+                # train advesarial
+                buff += 1
+                print('[INFO][TRAIN] \t Training with Adversarial Examples')
+                pgd.train(epoch, model, criterion,
+                          opt, scheduler, cnfg, tr_loader, device, logger,
+                          cnfg['train']['lr_scheduler'])
+            else:
+                print('[INFO][TRAIN] \t Training with Clean Examples')
+                clean.train(epoch, model, criterion,
+                            opt, scheduler, tr_loader, device, logger,
+                            cnfg['train']['lr_scheduler'])
+            if adv_buff is True and buff == cnfg['mixed']['adv_epochs'] - 1:
+                # reset buffers
+                adv_buff, buff = False, 0
         else:
-            print('[INFO][TRAIN] \t Training with Clean Examples')
-            clean.train(epoch, model, criterion,
-                        opt, scheduler, tr_loader, device, logger,
-                        cnfg['train']['lr_scheduler'])
+            if epoch < cnfg['mixed']['adv_epochs']:
+                print('[INFO][TRAIN] \t Training with Adversarial Examples')
+                pgd.train(epoch, model, criterion,
+                          opt, scheduler, cnfg, tr_loader, device, logger,
+                          cnfg['train']['lr_scheduler'])
+            else:
+                print('[INFO][TRAIN] \t Training with Clean Examples')
+                clean.train(epoch, model, criterion,
+                            opt, scheduler, tr_loader, device, logger,
+                            cnfg['train']['lr_scheduler'])
         # always test with pgd
-        print('[INFO][TEST] \t Tessting with both Adversarial and Clean Examples')
+        print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
         pgd.test(epoch, model, tst_loader, criterion,
                  device, logger, cnfg, opt)
         # save

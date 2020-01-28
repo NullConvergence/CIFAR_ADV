@@ -27,7 +27,9 @@ train:
     momentum: 0.9
 
 mixed:
-  adv_epochs: 50
+  every_n: true
+  n: 20
+  adv_epochs: 1
 
 pgd:
     epsilon: 8.
@@ -44,7 +46,7 @@ opt:
 logger:
     wandb: true
     project: 'EXP'
-    run: 'CIFARMIXED'
+    run: 'CIFARMIXED-CYCLIC'
 
 save:
     epochs: 50
