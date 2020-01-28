@@ -32,7 +32,7 @@ mixed:
 pgd:
     epsilon: 8.
     alpha: 2.
-    iter: 1
+    iter: 8
     restarts: 1
     delta-init: 'random'
 
