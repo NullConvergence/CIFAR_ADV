@@ -51,25 +51,26 @@ def main():
             # we start by training with adversarial examples
             # for a clean training start, write 'epoch +1'
             print(epoch % cnfg['mixed']['n'])
-            if epoch % cnfg['mixed']['n'] == 0:
+            if epoch % cnfg['mixed']['n'] == 0 and adv_buff is False:
                 # start adv training
                 adv_buff = True
                 buff = 0
+            elif adv_buff is True and buff == cnfg['mixed']['adv_epochs']:
+                # reset buffers
+                adv_buff, buff = False, 0
+
             if adv_buff is True and buff < cnfg['mixed']['adv_epochs']:
                 # train advesarial
-                buff += 1
                 print('[INFO][TRAIN] \t Training with Adversarial Examples')
                 pgd.train(epoch, model, criterion,
                           opt, scheduler, cnfg, tr_loader, device, logger,
                           cnfg['train']['lr_scheduler'])
+                buff += 1
             else:
                 print('[INFO][TRAIN] \t Training with Clean Examples')
                 clean.train(epoch, model, criterion,
                             opt, scheduler, tr_loader, device, logger,
                             cnfg['train']['lr_scheduler'])
-            if adv_buff is True and buff == cnfg['mixed']['adv_epochs'] - 1:
-                # reset buffers
-                adv_buff, buff = False, 0
         else:
             if epoch < cnfg['mixed']['adv_epochs']:
                 print('[INFO][TRAIN] \t Training with Adversarial Examples')

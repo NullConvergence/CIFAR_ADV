@@ -28,8 +28,8 @@ train:
 
 mixed:
   every_n: true
-  n: 20
-  adv_epochs: 1
+  n: 2
+  adv_epochs: 2
 
 pgd:
     epsilon: 8.
