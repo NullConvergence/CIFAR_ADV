@@ -6,7 +6,7 @@ from cifar_data import mean, std
 
 def train_pgd(model, device, criterion, inpt, target, epsilon, alpha,
               iter, restart, opt, d_init='',
-              l_limit=0, u_limit=0):
+              l_limit=0, u_limit=0, doamp=True):
     epsilon, alpha = get_eps_alph(epsilon, alpha, device)
     # init delta
     delta = torch.zeros_like(inpt).to(device)
@@ -20,8 +20,11 @@ def train_pgd(model, device, criterion, inpt, target, epsilon, alpha,
     for iter in range(iter):
         output = model(inpt+delta)
         loss = criterion(output, target)
-        with amp.scale_loss(loss, opt) as scaled_loss:
-            scaled_loss.backward()
+        if doamp is True:
+            with amp.scale_loss(loss, opt) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
         grad = delta.grad.detach()
         delta.data = clamp(
             delta+alpha*torch.sign(grad), -epsilon, epsilon)
@@ -31,7 +34,7 @@ def train_pgd(model, device, criterion, inpt, target, epsilon, alpha,
 
 
 def eval_pgd(model, device, criterion, inpt, target, epsilon, alpha, iter,
-             restarts, l_limit, u_limit, opt):
+             restarts, l_limit, u_limit, opt, doamp=True):
     max_loss = torch.zeros(target.shape[0]).to(device)
     max_delta = torch.zeros_like(inpt).to(device)
     epsilon, alpha = get_eps_alph(epsilon, alpha, device)
@@ -49,8 +52,11 @@ def eval_pgd(model, device, criterion, inpt, target, epsilon, alpha, iter,
             index = torch.where(output.max(1)[1] == target)
             loss = F.cross_entropy(output, target)
             # loss = criterion(output, target)
-            with amp.scale_loss(loss, opt) as scale_loss:
-                scale_loss.backward()
+            if doamp is True:
+                with amp.scale_loss(loss, opt) as scale_loss:
+                    scale_loss.backward()
+            else:
+                loss.backward()
             grad = delta.grad.detach()
             d = delta[index[0], :, :, :]
             g = grad[index[0], :, :, :]

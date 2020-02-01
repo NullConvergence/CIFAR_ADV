@@ -53,16 +53,20 @@ def main():
                     loss_scale=cnfg['opt']['loss_scale'], verbosity=False)
     if cnfg['opt']['level'] == '02':
         amp_args['master_weights'] = cnfg['opt']['store']
-    model, opt = amp.initialize(model, opt, **amp_args)
+    # TODO: we currently do not store the AMP checkpoint :-(
+    # so resuming with amp is currently not possible
+
+    # model, opt = amp.initialize(model, opt, **amp_args)
     scheduler = utils.get_scheduler(
         opt, cnfg['train'], cnfg['train']['epochs']*len(tr_loader))
     # train+test
     for epoch in range(cnfg['train']['epochs']):
         train(epoch, model, criterion,
               opt, scheduler, cnfg, tr_loader, device, logger,
-              cnfg['train']['lr_scheduler'])
+              cnfg['train']['lr_scheduler'], doamp=False)
         # testing
-        test(epoch, model, tst_loader, criterion, device, logger, cnfg, opt)
+        test(epoch, model, tst_loader, criterion,
+             device, logger, cnfg, opt, doamp=False)
         # save
         if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \

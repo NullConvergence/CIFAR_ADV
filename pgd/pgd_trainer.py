@@ -6,7 +6,7 @@ import utils
 
 
 def train(epoch, model, criterion, opt, scheduler, cnfg,
-          tr_loader, device, logger, schdl_type='cyclic'):
+          tr_loader, device, logger, schdl_type='cyclic', doamp=True):
     model.train()
     ep_loss = 0
     ep_acc = 0
@@ -21,12 +21,15 @@ def train(epoch, model, criterion, opt, scheduler, cnfg,
                               opt=opt,
                               restart=cnfg['pgd']['restarts'],
                               d_init=cnfg['pgd']['delta-init'],
-                              l_limit=l_limit, u_limit=u_limit)
+                              l_limit=l_limit, u_limit=u_limit, doamp=doamp)
         output = model(inpt+delta)
         loss = criterion(output, targets)
         opt.zero_grad()
-        with amp.scale_loss(loss, opt) as scaled_loss:
-            scaled_loss.backward()
+        if doamp == True:
+            with amp.scale_loss(loss, opt) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
         opt.step()
         ep_loss += loss.item()
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
@@ -49,7 +52,7 @@ def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt):
                                  cnfg['pgd']['alpha'],
                                  cnfg['pgd']['iter'],
                                  cnfg['pgd']['restarts'],
-                                 l_limit, u_limit, opt)
+                                 l_limit, u_limit, opt, doamp=doamp)
         with torch.no_grad():
             # normal measurements
             output = model(inpt)
