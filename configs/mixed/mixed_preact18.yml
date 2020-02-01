@@ -1,10 +1,10 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'ResNet18'
+  arch: 'PreActResNet18'
   tvision:
     name: 'resnet18'
     args: {}
@@ -18,9 +18,9 @@ data:
 train:
   epochs: 300
   lr: 0.1
-  lr_scheduler: 'cyclic'
+  lr_scheduler: 'multistep'
   step: 100
-  milestones: [100, 125]
+  milestones: [150, 250]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
@@ -28,16 +28,14 @@ train:
   momentum: 0.9
 
 mixed:
+  every_n: false
   adv_epochs: 50
-
-resume:
-  path: './models/MIXED_RESNET18_CYCLIC.pth'
 
 pgd:
   epsilon: 8.
   alpha: 2.
-  iter: 40
-  restarts: 10
+  iter: 7
+  restarts: 1
   delta-init: 'random'
 
 opt:
@@ -46,9 +44,9 @@ opt:
   store: true
 
 logger:
-  wandb: false
-  project: 'EXP'
-  run: 'MIXED_RESNET18'
+  wandb: true
+  project: 'CIFAR10MIXED'
+  run: 'PREACT18'
 
 save:
   epochs: 50

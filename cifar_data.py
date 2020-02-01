@@ -8,21 +8,25 @@ std = (0.2471, 0.2435, 0.2616)
 def get_datasets(flag, dir, batch_size, apply_transform=True):
     t_trans, tst_trans = get_transforms() if apply_transform is True \
         else get_tensor_transforms()
+    num_workers = 2
     if flag == "10":
-        num_workers = 2
         train_dataset = datasets.CIFAR10(
             dir, train=True, transform=t_trans, download=True)
         tst_dataset = datasets.CIFAR10(
             dir, train=False, transform=tst_trans, download=True)
-        train_loader = torch.utils.data.DataLoader(
-            dataset=train_dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=num_workers)
-        tst_loader = torch.utils.data.DataLoader(
-            dataset=tst_dataset, batch_size=batch_size, shuffle=False, pin_memory=True, num_workers=2)
-        return train_loader, tst_loader
     elif flag == "100":
-        pass
+        train_dataset = datasets.CIFAR100(
+            dir, train=True, transform=t_trans, download=True)
+        tst_dataset = datasets.CIFAR100(
+            dir, train=False, transform=tst_trans, download=True)
     else:
         raise BaseException("Invalid dataset flag")
+
+    train_loader = torch.utils.data.DataLoader(
+        dataset=train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    tst_loader = torch.utils.data.DataLoader(
+        dataset=tst_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    return train_loader, tst_loader
 
 
 def get_transforms():

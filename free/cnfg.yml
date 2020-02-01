@@ -28,7 +28,7 @@ train:
     batch_replay: 8
 
 mixed:
-  every_n: true
+  every_n: false
   n: 2
   adv_epochs: 2
 

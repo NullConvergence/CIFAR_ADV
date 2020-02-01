@@ -11,9 +11,9 @@ def train(epoch, model, criterion, opt, scheduler, cnfg,
     ep_loss = 0
     ep_acc = 0
     print('[INFO][TRAINING][clean_training] \t Epoch {} started.'.format(epoch))
+    l_limit, u_limit = pgd.get_limits(device)
     for batch_idx, (inpt, targets) in enumerate(tqdm(tr_loader)):
         inpt, targets = inpt.to(device), targets.to(device)
-        l_limit, u_limit = pgd.get_limits(device)
         delta = pgd.train_pgd(model, device, criterion, inpt, targets,
                               epsilon=cnfg['pgd']['epsilon'],
                               alpha=cnfg['pgd']['alpha'],
@@ -35,7 +35,7 @@ def train(epoch, model, criterion, opt, scheduler, cnfg,
     if schdl_type != 'cyclic':
         utils.adjust_lr(opt, scheduler, logger, epoch)
     logger.log_train(epoch, ep_loss/len(tr_loader),
-                     (ep_acc/len(tr_loader))*100, "clean_training")
+                     (ep_acc/len(tr_loader))*100, "pgd_training")
 
 
 def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt):

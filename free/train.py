@@ -21,6 +21,12 @@ def main():
     # config
     args = parse_args()
     cnfg = utils.parse_config(args.config)
+    # change learnign rate scheduler and nr of epochs
+    if cnfg['train']['milestones']:
+        cnfg['train']['milestones'] = [x//cnfg['train']['epochs']
+                                       for x in cnfg['train']['milestones']]
+    cnfg['train']['epochs'] = cnfg['train']['epochs'] // \
+        cnfg['train']['batch_replay']
     # data
     tr_loader, tst_loader = get_datasets(cnfg['data']['flag'],
                                          cnfg['data']['dir'],
@@ -54,7 +60,8 @@ def main():
               epsilon, model, criterion, opt, scheduler,
               tr_loader, device, logger, cnfg['train']['lr_scheduler'])
         # testing
-        test(epoch, model, tst_loader, criterion, device, logger, cnfg, opt)
+        test(epoch*cnfg['train']['batch_replay'], model,
+             tst_loader, criterion, device, logger, cnfg, opt)
         # save
         if (epoch*cnfg['train']['batch_replay'] + 1) % cnfg['save']['epochs'] == 0 \
                 and epoch > 0:
