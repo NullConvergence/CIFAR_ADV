@@ -33,6 +33,8 @@ def train(epoch, delta, batch_runs, epsilon, model, criterion, opt, scheduler,
         ep_loss += loss.item()  # * targets.size(0)
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
 
-    logger.log_train(epoch*batch_runs, ep_loss/len(tr_loader),
+    # logger.log_train(epoch*batch_runs, ep_loss/len(tr_loader),
+    #                  (ep_acc/len(tr_loader))*100, "free_adv_training")
+    logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "free_adv_training")
     return delta

@@ -6,6 +6,7 @@ import torchvision
 from cifar_data import get_datasets
 from pgd.pgd_trainer import test
 from free.free_trainer import train
+import clean.trainer as clean
 from pgd.attack import get_eps_alph
 from logger import Logger
 import utils
@@ -55,16 +56,50 @@ def main():
     delta.requires_grad = True
     epsilon, _ = get_eps_alph(
         cnfg['pgd']['epsilon'], cnfg['pgd']['alpha'], device)
+    every_n = cnfg['mixed']['every_n']
+    buff, adv_buff = 0, False
     for epoch in range(cnfg['train']['epochs']):
-        delta = train(epoch, delta, cnfg['train']['batch_replay'],
-                      epsilon, model, criterion, opt, scheduler,
-                      tr_loader, device, logger, cnfg['train']['lr_scheduler'])
-        # testing
-        test(epoch*cnfg['train']['batch_replay'], model,
-             tst_loader, criterion, device, logger, cnfg, opt)
+        if every_n is True:
+            # we start by training with adversarial examples
+            # for a clean training start, write 'epoch +1'
+            print(epoch % cnfg['mixed']['n'])
+            if epoch % cnfg['mixed']['n'] == 0 and adv_buff is False:
+                # start adv training
+                adv_buff = True
+                buff = 0
+            elif adv_buff is True and buff == cnfg['mixed']['adv_epochs']:
+                # reset buffers
+                adv_buff, buff = False, 0
+
+            if adv_buff is True and buff < cnfg['mixed']['adv_epochs']:
+                # train advesarial
+                print('[INFO][TRAIN] \t Training with Adversarial Examples')
+                delta = train(epoch, delta, cnfg['train']['batch_replay'],
+                              epsilon, model, criterion, opt, scheduler,
+                              tr_loader, device, logger, cnfg['train']['lr_scheduler'])
+                buff += 1
+            else:
+                print('[INFO][TRAIN] \t Training with Clean Examples')
+                clean.train(epoch, model, criterion,
+                            opt, scheduler, tr_loader, device, logger,
+                            cnfg['train']['lr_scheduler'])
+        else:
+            if epoch < cnfg['mixed']['adv_epochs']:
+                print('[INFO][TRAIN] \t Training with Adversarial Examples')
+                delta = train(epoch, delta, cnfg['train']['batch_replay'],
+                              epsilon, model, criterion, opt, scheduler,
+                              tr_loader, device, logger, cnfg['train']['lr_scheduler'])
+            else:
+                print('[INFO][TRAIN] \t Training with Clean Examples')
+                clean.train(epoch, model, criterion,
+                            opt, scheduler, tr_loader, device, logger,
+                            cnfg['train']['lr_scheduler'])
+        # always test with pgd
+        print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
+        test(epoch, model, tst_loader, criterion,
+             device, logger, cnfg, opt)
         # save
-        if (epoch*cnfg['train']['batch_replay'] + 1) % cnfg['save']['epochs'] == 0 \
-                and epoch > 0:
+        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)
