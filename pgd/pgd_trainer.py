@@ -41,7 +41,7 @@ def train(epoch, model, criterion, opt, scheduler, cnfg,
                      (ep_acc/len(tr_loader))*100, "pgd_training")
 
 
-def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt):
+def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt, doamp=True):
     tst_loss, adv_loss, tst_acc, adv_acc = 0, 0, 0, 0
     model.eval()
     l_limit, u_limit = pgd.get_limits(device)
