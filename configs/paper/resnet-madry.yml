@@ -4,7 +4,7 @@ gpu: 'cuda:0'
 
 model:
   custom: true
-  arch: 'PreActResNet18'
+  arch: 'ResNet18'
   tvision:
     name: 'resnet18'
     args: {}
@@ -16,11 +16,11 @@ data:
 
 
 train:
-  epochs: 300
+  epochs: 200
   lr: 0.1
-  lr_scheduler: 'cyclic'
+  lr_scheduler: 'multistep'
   step: 100
-  milestones: [100, 125]
+  milestones: [100, 150]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
@@ -41,8 +41,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10ADVERSARIAL'
-  run: 'PGD_PREACT18'
+  project: 'ADV_WARM'
+  run: 'ResNet-Madry'
 
 save:
   epochs: 50

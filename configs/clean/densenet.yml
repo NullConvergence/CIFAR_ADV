@@ -1,10 +1,10 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'EfficientNetB0'
+  arch: 'DenseNet121'
   tvision:
     name: 'resnet18'
     args: {}
@@ -16,24 +16,16 @@ data:
 
 
 train:
-  epochs: 300
+  epochs: 200
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
-  milestones: [150, 250]
+  milestones: [60, 120, 160]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
-  batch_replay: 8
-
-pgd:
-  epsilon: 8.
-  alpha: 2.
-  iter: 7
-  restarts: 1
-  delta-init: 'random'
 
 opt:
   level: 'O2'
@@ -42,8 +34,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10_FREE'
-  run: 'EFFICIENTNETB0'
+  project: 'CIFAR10N'
+  run: 'DenseNetm2'
 
 save:
   epochs: 50

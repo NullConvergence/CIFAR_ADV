@@ -1,10 +1,10 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'EfficientNetB0'
+  arch: 'ResNet18'
   tvision:
     name: 'resnet18'
     args: {}
@@ -16,17 +16,16 @@ data:
 
 
 train:
-  epochs: 300
+  epochs: 200
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
-  milestones: [150, 250]
+  milestones: [100, 150]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
-  batch_replay: 8
 
 pgd:
   epsilon: 8.
@@ -42,8 +41,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10_FREE'
-  run: 'EFFICIENTNETB0'
+  project: 'CIFAR10_PGD'
+  run: 'RESNET18'
 
 save:
   epochs: 50

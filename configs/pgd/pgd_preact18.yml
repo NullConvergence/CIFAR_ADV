@@ -1,10 +1,10 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'EfficientNetB0'
+  arch: 'PreActResNet18'
   tvision:
     name: 'resnet18'
     args: {}
@@ -18,15 +18,14 @@ data:
 train:
   epochs: 300
   lr: 0.1
-  lr_scheduler: 'multistep'
+  lr_scheduler: 'cyclic'
   step: 100
-  milestones: [150, 250]
+  milestones: [100, 125]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
-  batch_replay: 8
 
 pgd:
   epsilon: 8.
@@ -42,8 +41,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10_FREE'
-  run: 'EFFICIENTNETB0'
+  project: 'CIFAR10ADVERSARIAL'
+  run: 'PGD_PREACT18'
 
 save:
   epochs: 50

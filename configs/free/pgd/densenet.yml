@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:1'
+gpu: 'cuda:0'
 
 model:
   custom: true
