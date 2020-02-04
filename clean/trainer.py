@@ -5,7 +5,7 @@ import utils
 
 
 def train(epoch, model, criterion, opt, scheduler,
-          tr_loader, device, logger, schdl_type='cyclic'):
+          tr_loader, device, logger):
     model.train()
     ep_loss = 0
     ep_acc = 0

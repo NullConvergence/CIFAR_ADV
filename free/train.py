@@ -52,7 +52,7 @@ def main():
     for epoch in range(cnfg['train']['epochs']):
         delta = train(epoch, delta, cnfg['train']['batch_replay'],
                       epsilon, model, criterion, opt, scheduler,
-                      tr_loader, device, logger, cnfg['train']['lr_scheduler'])
+                      tr_loader, device, logger)
         # testing
         stp = epoch*cnfg['train']['batch_replay']
         test(stp, model,

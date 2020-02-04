@@ -57,7 +57,7 @@ def main():
             print('[INFO][TRAIN] \t Training with Adversarial Examples')
             delta = train(epoch, delta, cnfg['train']['batch_replay'],
                           epsilon, model, criterion, opt, scheduler,
-                          tr_loader, device, logger, cnfg['train']['lr_scheduler'])
+                          tr_loader, device, logger)
             # always test with pgd
             print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
             test(epoch, model, tst_loader, criterion,

@@ -6,7 +6,7 @@ import utils
 
 
 def train(epoch, delta, batch_runs, epsilon, model, criterion, opt, scheduler,
-          tr_loader, device, logger, schdl_type='cyclic'):
+          tr_loader, device, logger):
     model.train()
     ep_loss, ep_acc = 0, 0
     l_limit, u_limit = get_limits(device)

@@ -44,8 +44,7 @@ def main():
     # train+test
     for epoch in range(cnfg['train']['epochs']):
         train(epoch, model, criterion,
-              opt, scheduler, tr_loader, device, logger,
-              cnfg['train']['lr_scheduler'])
+              opt, scheduler, tr_loader, device, logger)
         # testing
         test(epoch, model, tst_loader, criterion, device, logger)
         # save

@@ -63,25 +63,21 @@ def main():
                 # train advesarial
                 print('[INFO][TRAIN] \t Training with Adversarial Examples')
                 pgd.train(epoch, model, criterion,
-                          opt, scheduler, cnfg, tr_loader, device, logger,
-                          cnfg['train']['lr_scheduler'])
+                          opt, scheduler, cnfg, tr_loader, device, logger)
                 buff += 1
             else:
                 print('[INFO][TRAIN] \t Training with Clean Examples')
                 clean.train(epoch, model, criterion,
-                            opt, scheduler, tr_loader, device, logger,
-                            cnfg['train']['lr_scheduler'])
+                            opt, scheduler, tr_loader, device, logger)
         else:
             if epoch < cnfg['mixed']['adv_epochs']:
                 print('[INFO][TRAIN] \t Training with Adversarial Examples')
                 pgd.train(epoch, model, criterion,
-                          opt, scheduler, cnfg, tr_loader, device, logger,
-                          cnfg['train']['lr_scheduler'])
+                          opt, scheduler, cnfg, tr_loader, device, logger)
             else:
                 print('[INFO][TRAIN] \t Training with Clean Examples')
                 clean.train(epoch, model, criterion,
-                            opt, scheduler, tr_loader, device, logger,
-                            cnfg['train']['lr_scheduler'])
+                            opt, scheduler, tr_loader, device, logger)
         # always test with pgd
         print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
         pgd.test(epoch, model, tst_loader, criterion,

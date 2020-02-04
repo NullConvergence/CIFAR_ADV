@@ -7,7 +7,7 @@ import utils
 
 
 def train(epoch, delta, model, criterion, opt, scheduler, cnfg,
-          tr_loader, device, logger, epsilon=8/255, alpha=2/255, schdl_type='cyclic'):
+          tr_loader, device, logger, epsilon=8/255, alpha=10/255):
     model.train()
     ep_loss, ep_acc = 0, 0
     l_limit, u_limit = get_limits(device)
@@ -43,6 +43,7 @@ def train(epoch, delta, model, criterion, opt, scheduler, cnfg,
         ep_loss += loss.item()  # * targets.size(0)
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
 
+    utils.log_lr(logger, opt, epoch)
     logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "fast_adv_training")
     return delta
