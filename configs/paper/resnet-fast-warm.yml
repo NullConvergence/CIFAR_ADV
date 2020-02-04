@@ -28,6 +28,15 @@ train:
   momentum: 0.9
   batch_replay: 8
 
+mixed:
+  every_n: false
+  adv_epochs: 50
+
+fgsm:
+  epsilon: 8.
+  alpha: 10.
+  delta-init: 'random'
+
 pgd:
   epsilon: 8.
   alpha: 10.
@@ -43,7 +52,7 @@ opt:
 logger:
   wandb: true
   project: 'ADV_WARM'
-  run: 'ResNet-Free'
+  run: 'ResNet-Fast-Warm'
 
 save:
   epochs: 50

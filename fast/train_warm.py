@@ -6,6 +6,7 @@ import torchvision
 from cifar_data import get_datasets
 from pgd.pgd_trainer import test
 from fast.fast_trainer import train
+import clean.trainer as clean
 from pgd.attack import get_eps_alph
 from logger import Logger
 import utils
@@ -21,6 +22,7 @@ def main():
     # config
     args = parse_args()
     cnfg = utils.parse_config(args.config)
+
     # data
     tr_loader, tst_loader = get_datasets(cnfg['data']['flag'],
                                          cnfg['data']['dir'],
@@ -46,18 +48,25 @@ def main():
 
     # train+test
     delta = torch.zeros(cnfg['data']['batch_size'], 3, 32, 32).to(device)
+    delta.requires_grad = True
     epsilon, alpha = get_eps_alph(
         cnfg['fgsm']['epsilon'], cnfg['fgsm']['alpha'], device)
-
+    epoch = 0
     for epoch in range(cnfg['train']['epochs']):
-        delta = train(epoch, delta, model, criterion, opt, scheduler, cnfg,
-                      tr_loader, device, logger, epsilon, alpha)
-        # testing
-        test(epoch, model,
-             tst_loader, criterion, device, logger, cnfg, opt)
+        if epoch < cnfg['mixed']['adv_epochs']:
+            print('[INFO][TRAIN] \t Training with Adversarial Examples')
+            delta = train(epoch, delta, model, criterion, opt, scheduler, cnfg,
+                          tr_loader, device, logger, epsilon, alpha)
+        else:
+            print('[INFO][TRAIN] \t Training with Clean Examples')
+            clean.train(epoch, model, criterion,
+                        opt, scheduler, tr_loader, device, logger)
+        # always test with pgd
+        print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
+        test(epoch, model, tst_loader, criterion,
+             device, logger, cnfg, opt)
         # save
-        if (epoch) % cnfg['save']['epochs'] == 0 \
-                and epoch > 0:
+        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

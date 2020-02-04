@@ -11,17 +11,18 @@ def train(epoch, delta, model, criterion, opt, scheduler, cnfg,
     model.train()
     ep_loss, ep_acc = 0, 0
     l_limit, u_limit = get_limits(device)
+
     print('[INFO][TRAINING][fast_adv_training] \t Epoch {} started.'.format(epoch))
     for batch_idx, (inpt, targets) in enumerate(tqdm(tr_loader)):
         inpt, targets = inpt.to(device), targets.to(device)
-        if cnfg['pgd']['delta_init'] != 'previous':
-            delta = torch.zeros_like(inpt).cuda
-        if cnfg['pgd']['delta_init'] == 'random':
+        if cnfg['fgsm']['delta-init'] != 'previous':
+            delta = torch.zeros_like(inpt).to(device)
+        if cnfg['fgsm']['delta-init'] == 'random':
             for i in range(len(epsilon)):
-                delta[:, i, :, :].uniform_(-epsilon[i]
-                                           [0][0].item(), epsilon[0][0][0].item())
+                delta[:, i, :, :].uniform_(-epsilon[i][0][0].item(),
+                                           epsilon[0][0][0].item())
             delta.data = clamp(delta, l_limit-inpt, u_limit-inpt)
-        delta.requres_gard = True
+        delta.requires_grad = True
         output = model(inpt+delta[:inpt.size(0)])
         loss = F.cross_entropy(output, targets)
         with amp.scale_loss(loss, opt) as scaled_loss:
@@ -30,13 +31,14 @@ def train(epoch, delta, model, criterion, opt, scheduler, cnfg,
         delta.data = clamp(
             delta + alpha * torch.sign(grad), -epsilon, epsilon)
         delta.data[:inpt.size(0)] = clamp(
-            delta[inpt.size(0)], l_limit-inpt, u_limit-inpt)
+            delta[:inpt.size(0)], l_limit - inpt, u_limit - inpt)
         delta = delta.detach()
         output = model(inpt+delta[:inpt.size(0)])
         loss = criterion(output, targets)
         opt.zero_grad()
         with amp.scale_loss(loss, opt) as scaled_loss:
             scaled_loss.backward()
+        opt.step()
         utils.adjust_lr(opt, scheduler, logger,
                         epoch*batch_idx, do_log=False)
 
