@@ -19,12 +19,15 @@ train:
     lr: 0.1
     lr_scheduler: 'cyclic'
     step: 100
-    milestones: [40000, 60000]
+    milestones: [150, 250]
     gamma: 0.1
     lr_min: 0.
     lr_max: 0.2
     weight_decay: 0.00005
     momentum: 0.9
+
+mixed:
+  adv_epochs: 50
 
 pgd:
     epsilon: 8.
@@ -40,8 +43,8 @@ opt:
 
 logger:
     wandb: true
-    project: 'CIFARPGD'
-    run: 'RESNET18'
+    project: 'EXP'
+    run: 'CIFARMIXED'
 
 save:
     epochs: 50

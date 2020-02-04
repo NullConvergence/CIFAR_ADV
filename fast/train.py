@@ -4,14 +4,16 @@ import torch
 import torch.nn as nn
 import torchvision
 from cifar_data import get_datasets
-from pgd.pgd_trainer import train, test
+from pgd.pgd_trainer import test
+from fast.fast_trainer import train
+from pgd.attack import get_eps_alph
 from logger import Logger
 import utils
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./pgd/cnfg.yml', type=str)
+    parser.add_argument('--config', default='./free/cnfg.yml', type=str)
     return parser.parse_args()
 
 
@@ -41,14 +43,21 @@ def main():
     model, opt = amp.initialize(model, opt, **amp_args)
     scheduler = utils.get_scheduler(
         opt, cnfg['train'], cnfg['train']['epochs']*len(tr_loader))
+
     # train+test
+    delta = torch.zeros(cnfg['data']['batch_size'], 3, 32, 32).to(device)
+    epsilon, alpha = get_eps_alph(
+        cnfg['fgsm']['epsilon'], cnfg['fgsm']['alpha'], device)
+
     for epoch in range(cnfg['train']['epochs']):
-        train(epoch, model, criterion,
-              opt, scheduler, cnfg, tr_loader, device, logger)
+        delta = train(epoch, delta, model, criterion, opt, scheduler, cnfg,
+                      tr_loader, device, logger, epsilon, alpha)
         # testing
-        test(epoch, model, tst_loader, criterion, device, logger, cnfg, opt)
+        test(epoch, model,
+             tst_loader, criterion, device, logger, cnfg, opt)
         # save
-        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
+        if (epoch) % cnfg['save']['epochs'] == 0 \
+                and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

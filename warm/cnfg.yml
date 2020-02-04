@@ -26,6 +26,11 @@ train:
     weight_decay: 0.00005
     momentum: 0.9
 
+mixed:
+  every_n: true
+  n: 2
+  adv_epochs: 2
+
 pgd:
     epsilon: 8.
     alpha: 2.
@@ -40,8 +45,8 @@ opt:
 
 logger:
     wandb: true
-    project: 'CIFARPGD'
-    run: 'RESNET18'
+    project: 'EXP'
+    run: 'CIFARMIXED-CYCLIC'
 
 save:
     epochs: 50

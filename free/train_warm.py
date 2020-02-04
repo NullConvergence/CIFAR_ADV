@@ -4,14 +4,17 @@ import torch
 import torch.nn as nn
 import torchvision
 from cifar_data import get_datasets
-from pgd.pgd_trainer import train, test
+from pgd.pgd_trainer import test
+from free.free_trainer import train
+import clean.trainer as clean
+from pgd.attack import get_eps_alph
 from logger import Logger
 import utils
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='./pgd/cnfg.yml', type=str)
+    parser.add_argument('--config', default='./free/cnfg.yml', type=str)
     return parser.parse_args()
 
 
@@ -19,6 +22,7 @@ def main():
     # config
     args = parse_args()
     cnfg = utils.parse_config(args.config)
+
     # data
     tr_loader, tst_loader = get_datasets(cnfg['data']['flag'],
                                          cnfg['data']['dir'],
@@ -41,12 +45,32 @@ def main():
     model, opt = amp.initialize(model, opt, **amp_args)
     scheduler = utils.get_scheduler(
         opt, cnfg['train'], cnfg['train']['epochs']*len(tr_loader))
+
     # train+test
-    for epoch in range(cnfg['train']['epochs']):
-        train(epoch, model, criterion,
-              opt, scheduler, cnfg, tr_loader, device, logger)
-        # testing
-        test(epoch, model, tst_loader, criterion, device, logger, cnfg, opt)
+    delta = torch.zeros(cnfg['data']['batch_size'], 3, 32, 32).to(device)
+    delta.requires_grad = True
+    epsilon, _ = get_eps_alph(
+        cnfg['pgd']['epsilon'], cnfg['pgd']['alpha'], device)
+    epoch = 0
+    while epoch <= cnfg['train']['epochs']:
+        if epoch <= cnfg['mixed']['adv_epochs']:
+            print('[INFO][TRAIN] \t Training with Adversarial Examples')
+            delta = train(epoch, delta, cnfg['train']['batch_replay'],
+                          epsilon, model, criterion, opt, scheduler,
+                          tr_loader, device, logger)
+            # always test with pgd
+            print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
+            test(epoch, model, tst_loader, criterion,
+                 device, logger, cnfg, opt)
+            epoch += cnfg['train']['batch_replay']
+        else:
+            print('[INFO][TRAIN] \t Training with Clean Examples')
+            clean.train(epoch, model, criterion,
+                        opt, scheduler, tr_loader, device, logger,
+                        'batch')
+            test(epoch, model, tst_loader, criterion,
+                 device, logger, cnfg, opt)
+            epoch += 1
         # save
         if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \

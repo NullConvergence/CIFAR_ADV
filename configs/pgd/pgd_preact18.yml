@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
@@ -12,20 +12,27 @@ model:
 data:
   flag: '10'
   dir: './cifar-data'
-  batch_size: 256
+  batch_size: 128
 
 
 train:
-  epochs: 125
+  epochs: 200
   lr: 0.1
-  lr_scheduler: 'multistep'
+  lr_scheduler: 'cyclic'
   step: 100
-  milestones: [75, 100]
+  milestones: [40000, 60000]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
+
+pgd:
+  epsilon: 8.
+  alpha: 2.
+  iter: 7
+  restarts: 1
+  delta-init: 'random'
 
 opt:
   level: 'O2'
@@ -34,8 +41,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10N'
-  run: 'PREACTRSNET18B256-125e'
+  project: 'CIFAR10ADVERSARIAL'
+  run: 'PGD_PREACT18'
 
 save:
-  epochs: 125
+  epochs: 50

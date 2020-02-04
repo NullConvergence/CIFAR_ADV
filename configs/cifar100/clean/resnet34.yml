@@ -1,16 +1,16 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'ResNet18'
+  arch: 'ResNet34'
   tvision:
-    name: 'resnet18'
+    name: 'resnet34'
     args: {}
 
 data:
-  flag: '10'
+  flag: '100'
   dir: './cifar-data'
   batch_size: 128
 
@@ -34,8 +34,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10N'
-  run: 'RESNET18-CSTM'
+  project: 'CIFAR100N'
+  run: 'RESNET34'
 
 save:
   epochs: 50

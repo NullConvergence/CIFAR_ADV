@@ -16,9 +16,9 @@ data:
 
 
 train:
-  epochs: 300
+  epochs: 200
   lr: 0.1
-  lr_scheduler: 'multistep'
+  lr_scheduler: 'cyclic'
   step: 100
   milestones: [40000, 60000]
   gamma: 0.1
@@ -27,6 +27,13 @@ train:
   weight_decay: 0.00005
   momentum: 0.9
 
+pgd:
+  epsilon: 8.
+  alpha: 2.
+  iter: 7
+  restarts: 1
+  delta-init: 'random'
+
 opt:
   level: 'O2'
   loss_scale: 1.0
@@ -34,8 +41,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10N'
-  run: 'RESNET18-CSTM'
+  project: 'CIFAR10ADVERSARIAL'
+  run: 'PGD_RESNET18'
 
 save:
   epochs: 50

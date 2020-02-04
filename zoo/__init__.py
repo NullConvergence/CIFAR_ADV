@@ -1,3 +1,5 @@
-from .efficient_net import *
+from .densenet import *
+from .efficientnet import *
 from .resnet import *
-from .preact_resnet import *
+from .preactresnet import *
+from .wideresnet import *

@@ -1,10 +1,10 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'PreActResNet18'
+  arch: 'ResNet18'
   tvision:
     name: 'resnet18'
     args: {}
@@ -12,15 +12,15 @@ model:
 data:
   flag: '10'
   dir: './cifar-data'
-  batch_size: 256
+  batch_size: 128
 
 
 train:
-  epochs: 150
+  epochs: 200
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
-  milestones: [100, 125]
+  milestones: [40000, 60000]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
@@ -35,7 +35,7 @@ opt:
 logger:
   wandb: true
   project: 'CIFAR10N'
-  run: 'PREACTRSNET18B256-150e'
+  run: 'RESNET18m2'
 
 save:
   epochs: 50

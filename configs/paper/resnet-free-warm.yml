@@ -16,7 +16,7 @@ data:
 
 
 train:
-  epochs: 300
+  epochs: 200
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
@@ -26,6 +26,18 @@ train:
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
+  batch_replay: 8
+
+mixed:
+  every_n: false
+  adv_epochs: 50
+
+pgd:
+  epsilon: 8.
+  alpha: 2.
+  iter: 7
+  restarts: 1
+  delta-init: 'random'
 
 opt:
   level: 'O2'
@@ -34,8 +46,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR10N'
-  run: 'RESNET18-CSTM'
+  project: 'ADV_WARM'
+  run: 'ResNet-Free-Warm'
 
 save:
   epochs: 50
