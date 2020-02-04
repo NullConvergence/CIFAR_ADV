@@ -20,7 +20,7 @@ train:
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
-  milestones: [100, 150]
+  milestones: [40000, 60000]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2

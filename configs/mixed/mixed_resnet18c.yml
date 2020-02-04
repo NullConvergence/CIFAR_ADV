@@ -16,11 +16,11 @@ data:
 
 
 train:
-  epochs: 300
+  epochs: 200
   lr: 0.1
   lr_scheduler: 'cyclic'
   step: 100
-  milestones: [100, 125]
+  milestones: [40000, 60000]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
