@@ -67,7 +67,12 @@ def get_lr(opt):
     return lrs
 
 
-def adjust_lr(opt, sc, log, stp):
+def adjust_lr(opt, sc, log, stp, do_log=True):
     sc.step()
+    if do_log is True:
+        log_lr(log, opt, stp)
+
+
+def log_lr(log, opt, stp):
     lr = get_lr(opt)
     log.log_lr(lr, stp)

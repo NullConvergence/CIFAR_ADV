@@ -37,13 +37,12 @@ def train(epoch, delta, model, criterion, opt, scheduler, cnfg,
         opt.zero_grad()
         with amp.scale_loss(loss, opt) as scaled_loss:
             scaled_loss.backward()
-        if schdl_type == 'cyclic':
-            utils.adjust_lr(opt, scheduler, logger,
-                            epoch)
+        utils.adjust_lr(opt, scheduler, logger,
+                        epoch*batch_idx, do_log=False)
+
         ep_loss += loss.item()  # * targets.size(0)
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
-    if schdl_type != 'cyclic':
-        utils.adjust_lr(opt, scheduler, logger, epoch)
-    logger.log_train(epoch*batch_runs, ep_loss/len(tr_loader),
+
+    logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "fast_adv_training")
     return delta

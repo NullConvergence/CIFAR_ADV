@@ -20,9 +20,9 @@ def train(epoch, model, criterion, opt, scheduler,
         opt.step()
         ep_loss += loss.item()
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
-        if schdl_type == 'cyclic':
+        if schdl_type == 'cyclic' or schdl_type == 'batch':
             utils.adjust_lr(opt, scheduler, logger, epoch*batch_idx)
-    if schdl_type != 'cyclic':
+    if schdl_type != 'cyclic' and schdl_type != 'batch':
         utils.adjust_lr(opt, scheduler, logger, epoch)
     logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "clean_training")

@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
@@ -16,17 +16,16 @@ data:
 
 
 train:
-  epochs: 200
+  epochs: 300
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
-  milestones: [40000, 60000]
+  milestones: [150, 250]
   gamma: 0.1
   lr_min: 0.
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
-  batch_replay: 8
 
 pgd:
   epsilon: 8.
@@ -42,8 +41,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'ADV_WARM'
-  run: 'ResNet-Free'
+  project: 'CIFAR10_FAST'
+  run: 'RESNET18'
 
 save:
   epochs: 50

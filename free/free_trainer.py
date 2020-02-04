@@ -22,19 +22,16 @@ def train(epoch, delta, batch_runs, epsilon, model, criterion, opt, scheduler,
             grad = delta.grad.detach()
             delta.data = clamp(
                 delta + epsilon*torch.sign(grad), -epsilon, epsilon)
-
             delta.data[:inpt.size(0)] = clamp(delta[:inpt.size(0)],
                                               l_limit - inpt, u_limit - inpt)
             opt.step()
             delta.grad.zero_()
-            if schdl_type == 'cyclic':
-                utils.adjust_lr(opt, scheduler, logger,
-                                epoch*batch_idx*mini_batchidx)
+            utils.adjust_lr(opt, scheduler, logger,
+                            epoch*batch_idx*mini_batchidx, do_log=False)
         ep_loss += loss.item()  # * targets.size(0)
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
 
-    # logger.log_train(epoch*batch_runs, ep_loss/len(tr_loader),
-    #                  (ep_acc/len(tr_loader))*100, "free_adv_training")
+    utils.log_lr(logger, opt, epoch)
     logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "free_adv_training")
     return delta
