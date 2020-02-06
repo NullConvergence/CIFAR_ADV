@@ -46,7 +46,8 @@ def main():
         train(epoch, model, criterion,
               opt, scheduler, cnfg, tr_loader, device, logger)
         # testing
-        test(epoch, model, tst_loader, criterion, device, logger, cnfg, opt)
+        if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
+            test(epoch, model, tst_loader, criterion, device, logger, cnfg, opt)
         # save
         if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \

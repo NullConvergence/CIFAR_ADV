@@ -62,9 +62,10 @@ def main():
             clean.train(epoch, model, criterion,
                         opt, scheduler, tr_loader, device, logger)
         # always test with pgd
-        print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
-        test(epoch, model, tst_loader, criterion,
-             device, logger, cnfg, opt)
+        if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
+            print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
+            test(epoch, model, tst_loader, criterion,
+                 device, logger, cnfg, opt)
         # save
         if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \

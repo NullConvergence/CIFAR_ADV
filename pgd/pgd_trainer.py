@@ -44,7 +44,8 @@ def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt, doamp=
     tst_loss, adv_loss, tst_acc, adv_acc = 0, 0, 0, 0
     model.eval()
     l_limit, u_limit = pgd.get_limits(device)
-    for _, (inpt, targets) in enumerate(tst_loader):
+    for batch_idx, (inpt, targets) in enumerate(tst_loader):
+        print('[INFO][PGD-TEST] Batch: {}'.format(batch_idx))
         inpt, targets = inpt.to(device), targets.to(device)
         pgd_delta = pgd.eval_pgd(model, device, criterion, inpt, targets,
                                  cnfg['pgd']['epsilon'],

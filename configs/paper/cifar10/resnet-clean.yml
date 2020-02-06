@@ -14,7 +14,6 @@ data:
   dir: './cifar-data'
   batch_size: 128
 
-
 train:
   epochs: 200
   lr: 0.1
@@ -26,20 +25,12 @@ train:
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
-  batch_replay: 8
 
-mixed:
-  every_n: false
-  adv_epochs: 50
-
-fgsm:
-  epsilon: 8.
-  alpha: 10.
-  delta-init: 'previous'
+test: 50
 
 pgd:
   epsilon: 8.
-  alpha: 10.
+  alpha: 2.
   iter: 7
   restarts: 1
   delta-init: 'random'
@@ -52,7 +43,7 @@ opt:
 logger:
   wandb: true
   project: 'ADV_WARM'
-  run: 'ResNet-Fast-Warm-Prev'
+  run: 'ResNet-Clean'
 
 save:
   epochs: 50

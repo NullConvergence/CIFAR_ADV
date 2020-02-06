@@ -8,7 +8,7 @@ std = (0.2471, 0.2435, 0.2616)
 def get_datasets(flag, dir, batch_size, apply_transform=True):
     t_trans, tst_trans = get_transforms() if apply_transform is True \
         else get_tensor_transforms()
-    num_workers = 2
+    num_workers = 5
     if flag == "10":
         train_dataset = datasets.CIFAR10(
             dir, train=True, transform=t_trans, download=True)

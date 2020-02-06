@@ -27,6 +27,8 @@ train:
   weight_decay: 0.00005
   momentum: 0.9
 
+test: 50
+
 mixed:
   every_n: false
   adv_epochs: 50

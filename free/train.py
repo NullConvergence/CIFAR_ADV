@@ -49,17 +49,20 @@ def main():
     delta.requires_grad = True
     epsilon, _ = get_eps_alph(
         cnfg['pgd']['epsilon'], cnfg['pgd']['alpha'], device)
-    for epoch in range(cnfg['train']['epochs']):
+    epoch = 0
+    while epoch <= cnfg['train']['epochs']:
+        print('[INFO][TRAIN] \t Training with Clean Examples')
         delta = train(epoch, delta, cnfg['train']['batch_replay'],
                       epsilon, model, criterion, opt, scheduler,
                       tr_loader, device, logger)
-        # testing
-        stp = epoch*cnfg['train']['batch_replay']
-        test(stp, model,
-             tst_loader, criterion, device, logger, cnfg, opt)
+        # always test with pgd
+        if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
+            print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
+            test(epoch, model, tst_loader, criterion,
+                 device, logger, cnfg, opt)
+        epoch += cnfg['train']['batch_replay']
         # save
-        if (epoch*cnfg['train']['batch_replay']) % cnfg['save']['epochs'] == 0 \
-                and epoch > 0:
+        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

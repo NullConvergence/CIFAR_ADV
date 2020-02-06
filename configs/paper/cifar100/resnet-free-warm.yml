@@ -1,16 +1,17 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
   arch: 'ResNet18'
+  kwargs: {'num_classes': 100}
   tvision:
     name: 'resnet18'
     args: {}
 
 data:
-  flag: '10'
+  flag: '100'
   dir: './cifar-data'
   batch_size: 128
 
@@ -28,6 +29,12 @@ train:
   momentum: 0.9
   batch_replay: 8
 
+test: 50
+
+mixed:
+  every_n: false
+  adv_epochs: 50
+
 pgd:
   epsilon: 8.
   alpha: 2.
@@ -43,7 +50,7 @@ opt:
 logger:
   wandb: true
   project: 'ADV_WARM'
-  run: 'ResNet-Free'
+  run: 'ResNet-Free-Warm-100'
 
 save:
   epochs: 50

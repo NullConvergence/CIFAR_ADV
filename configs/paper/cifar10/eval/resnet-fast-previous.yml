@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
@@ -26,18 +26,22 @@ train:
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
-  batch_replay: 8
 
-fgsm:
-  epsilon: 8.
-  alpha: 10.
-  delta-init: 'random'
+test: 50
+
+resume:
+  path: './models/ADV_WARM_ResNet-Fast-Prev_199.pth'
+
+mixed:
+  every_n: false
+  adv_epochs: 50
+
 
 pgd:
   epsilon: 8.
-  alpha: 10.
-  iter: 7
-  restarts: 1
+  alpha: 2.
+  iter: 20
+  restarts: 10
   delta-init: 'random'
 
 opt:
@@ -46,9 +50,9 @@ opt:
   store: true
 
 logger:
-  wandb: true
+  wandb: false
   project: 'ADV_WARM'
-  run: 'ResNet-Fast'
+  run: 'ResNet-Warm'
 
 save:
   epochs: 50

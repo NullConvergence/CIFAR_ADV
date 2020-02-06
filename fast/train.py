@@ -53,11 +53,11 @@ def main():
         delta = train(epoch, delta, model, criterion, opt, scheduler, cnfg,
                       tr_loader, device, logger, epsilon, alpha)
         # testing
-        test(epoch, model,
-             tst_loader, criterion, device, logger, cnfg, opt)
+        if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
+            test(epoch, model,
+                 tst_loader, criterion, device, logger, cnfg, opt)
         # save
-        if (epoch) % cnfg['save']['epochs'] == 0 \
-                and epoch > 0:
+        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

@@ -23,7 +23,8 @@ def parse_config(path):
 
 def get_model(cnfg):
     if cnfg['custom'] is True:
-        return models.get_from_zoo(cnfg['arch'], {})
+        kwargs = cnfg['kwargs'] if 'kwargs' in cnfg else {}
+        return models.get_from_zoo(cnfg['arch'], kwargs)
     else:
         return models.get_tvision(cnfg['tvision']['name'], cnfg['tvision']['args'])
 
