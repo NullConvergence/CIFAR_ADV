@@ -59,20 +59,22 @@ def main():
                           epsilon, model, criterion, opt, scheduler,
                           tr_loader, device, logger)
             # always test with pgd
-            print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
-            test(epoch, model, tst_loader, criterion,
-                 device, logger, cnfg, opt)
+            if epoch % cnfg['test'] == 0 or epoch == 0:
+                print(
+                    '[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
+                test(epoch, model, tst_loader, criterion,
+                     device, logger, cnfg, opt)
             epoch += cnfg['train']['batch_replay']
         else:
             print('[INFO][TRAIN] \t Training with Clean Examples')
             clean.train(epoch, model, criterion,
-                        opt, scheduler, tr_loader, device, logger,
-                        'batch')
-            test(epoch, model, tst_loader, criterion,
-                 device, logger, cnfg, opt)
+                        opt, scheduler, tr_loader, device, logger)
+            if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
+                test(epoch, model, tst_loader, criterion,
+                     device, logger, cnfg, opt)
             epoch += 1
         # save
-        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
+        if epoch % cnfg['save']['epochs'] == 0 or (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

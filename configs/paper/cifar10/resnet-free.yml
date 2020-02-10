@@ -14,6 +14,7 @@ data:
   dir: './cifar-data'
   batch_size: 128
 
+
 train:
   epochs: 200
   lr: 0.1
@@ -25,6 +26,9 @@ train:
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
+  batch_replay: 8
+
+test: 50
 
 pgd:
   epsilon: 8.
@@ -41,7 +45,8 @@ opt:
 logger:
   wandb: true
   project: 'ADV_WARM'
-  run: 'ResNet-Clean'
+  run: 'ResNet-Free'
 
 save:
-  epochs: 50
+  epochs: 40 # the saving time is decreased because batch_replay
+  # is equal to 8 and we devide epochs*batch_replay/save

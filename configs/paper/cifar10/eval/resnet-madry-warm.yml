@@ -1,0 +1,58 @@
+seed: 0
+
+gpu: 'cuda:1'
+
+model:
+  custom: true
+  arch: 'ResNet18'
+  tvision:
+    name: 'resnet18'
+    args: {}
+
+data:
+  flag: '10'
+  dir: './cifar-data'
+  batch_size: 128
+
+
+train:
+  epochs: 200
+  lr: 0.1
+  lr_scheduler: 'multistep'
+  step: 100
+  milestones: [40000, 60000]
+  gamma: 0.1
+  lr_min: 0.
+  lr_max: 0.2
+  weight_decay: 0.00005
+  momentum: 0.9
+
+test: 50
+
+resume:
+  path: './models/ADV_WARM_ResNet-Warm_199.pth'
+
+mixed:
+  every_n: false
+  adv_epochs: 50
+
+
+pgd:
+  epsilon: 8.
+  alpha: 2.
+  iter: 20
+  restarts: 10
+  delta-init: 'random'
+
+opt:
+  level: 'O2'
+  loss_scale: 1.0
+  store: true
+
+logger:
+  wandb: false
+  project: 'ADV_WARM'
+  run: 'ResNet-Warm'
+
+save:
+  epochs: 50

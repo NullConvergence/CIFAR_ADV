@@ -6,7 +6,7 @@ import utils
 
 
 def train(epoch, delta, batch_runs, epsilon, model, criterion, opt, scheduler,
-          tr_loader, device, logger):
+          tr_loader, device, logger, log_batch=False):
     model.train()
     ep_loss, ep_acc = 0, 0
     l_limit, u_limit = get_limits(device)
@@ -32,6 +32,8 @@ def train(epoch, delta, batch_runs, epsilon, model, criterion, opt, scheduler,
         ep_acc += (output.max(1)[1] == targets).sum().item() / len(targets)
 
     utils.log_lr(logger, opt, epoch)
+    if log_batch is True:
+        epoch = epoch * batch_runs
     logger.log_train(epoch, ep_loss/len(tr_loader),
                      (ep_acc/len(tr_loader))*100, "free_adv_training")
     return delta

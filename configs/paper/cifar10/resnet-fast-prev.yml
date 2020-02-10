@@ -26,6 +26,14 @@ train:
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
+  batch_replay: 8
+
+test: 50
+
+fgsm:
+  epsilon: 8.
+  alpha: 10.
+  delta-init: 'previous'
 
 pgd:
   epsilon: 8.
@@ -42,7 +50,7 @@ opt:
 logger:
   wandb: true
   project: 'ADV_WARM'
-  run: 'ResNet-Madry'
+  run: 'ResNet-Fast-Prev'
 
 save:
   epochs: 50
