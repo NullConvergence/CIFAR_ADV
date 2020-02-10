@@ -51,18 +51,18 @@ def main():
         cnfg['pgd']['epsilon'], cnfg['pgd']['alpha'], device)
     epoch = 0
     while epoch <= cnfg['train']['epochs']:
-        print('[INFO][TRAIN] \t Training with Clean Examples')
+        print('[INFO][TRAIN] \t Training with \'Free\' Examples')
         delta = train(epoch, delta, cnfg['train']['batch_replay'],
                       epsilon, model, criterion, opt, scheduler,
                       tr_loader, device, logger)
         # always test with pgd
-        if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
+        if epoch % cnfg['test'] == 0 or epoch == 0:
             print('[INFO][TEST] \t Testing with both Adversarial and Clean Examples')
             test(epoch, model, tst_loader, criterion,
                  device, logger, cnfg, opt)
         epoch += cnfg['train']['batch_replay']
         # save
-        if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
+        if epoch % cnfg['save']['epochs'] == 0 and epoch > 0:
             pth = 'models/' + cnfg['logger']['project'] + '_' \
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)

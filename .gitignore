@@ -2,7 +2,7 @@
 cifar-data/
 models/
 wandb/
-nohup*
+*.out
 .vscode/
 
 # Byte-compiled / optimized / DLL files
