@@ -6,7 +6,7 @@ from cifar_data import mean, std
 
 def train_pgd(model, device, criterion, inpt, target, epsilon, alpha,
               iter, restart, opt, d_init='',
-              l_limit=0, u_limit=0, doamp=True):
+              l_limit=0, u_limit=1, doamp=True):
     epsilon, alpha = get_eps_alph(epsilon, alpha, device)
     # init delta
     delta = torch.zeros_like(inpt).to(device)
@@ -93,10 +93,4 @@ def get_eps_alph(epsilon, alpha, dev):
     stdd = torch.tensor(std).view(3, 1, 1).to(dev)
     eps = (epsilon / 255.) / stdd
     alph = (alpha / 255.) / stdd
-    # print(eps, alph)
-    # eps = torch.tensor((epsilon / 255., epsilon / 255.,
-    #                     epsilon / 255.)).view(3, 1, 1).to(dev)
-    # alph = torch.tensor((alpha / 255., alpha / 255.,
-    #                      alpha / 255.)).view(3, 1, 1).to(dev)
-    # print(eps, alph)
     return eps, alph

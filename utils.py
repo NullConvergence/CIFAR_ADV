@@ -17,7 +17,7 @@ def set_seed(seed):
 
 def parse_config(path):
     with open(path, 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
+        cfg = yaml.load(ymlfile, Loader=yaml.FullLoader)
     return cfg
 
 

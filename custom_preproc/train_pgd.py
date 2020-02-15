@@ -4,8 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
-from cifar_data import get_datasets
-from pgd2.attack import PGD
+from cifar_data import get_datasets, mean, std
+from custom_preproc.pgd import PGD, PGDTest
+from custom_preproc.model_preproc import PreprocessingModel
 from logger import Logger
 import utils
 from tqdm import tqdm
@@ -32,6 +33,10 @@ def main():
         'cuda:0') if cnfg['gpu'] is None else torch.device(cnfg['gpu'])
     logger = Logger(cnfg)
     model = utils.get_model(cnfg['model']).to(device)
+    tmean = torch.tensor(mean).view(3, 1, 1).to(device)
+    tstd = torch.tensor(std).view(3, 1, 1).to(device)
+    preproc_model = PreprocessingModel(
+        model, preproc={'mean': tmean, 'std': tstd})
 
     criterion = nn.CrossEntropyLoss()
     opt = torch.optim.SGD(model.parameters(),
@@ -41,7 +46,8 @@ def main():
     scheduler = utils.get_scheduler(
         opt, cnfg['train'], cnfg['train']['epochs']*len(tr_loader))
 
-    pgd = PGD(model, cnfg['pgd'])
+    pgd = PGD(preproc_model, cnfg['pgd'])
+    pgd_test = PGDTest()
     # train+test
     for epoch in range(cnfg['train']['epochs']):
         model.train()
@@ -60,7 +66,7 @@ def main():
 
         logger.log_train(epoch, 0, acc/len(tr_loader)*100)
         if (epoch+1) % cnfg['test'] == 0 or epoch == 0:
-            test(epoch,  logger, model, pgd, tst_loader, device)
+            pgd_test(epoch,  logger, model, pgd, tst_loader, device)
 
         # # save
         if (epoch+1) % cnfg['save']['epochs'] == 0 and epoch > 0:
@@ -68,25 +74,6 @@ def main():
                 + cnfg['logger']['run'] + '_' + str(epoch) + '.pth'
             utils.save_model(model, cnfg, epoch, pth)
             logger.log_model(pth)
-
-
-def test(epoch, logger, model, pgd, tst_loader, device,):
-    acc, loss, adv_acc, adv_loss = 0, 0, 0, 0
-    model.eval()
-    for batch_idx, (x, y_) in enumerate(tqdm(tst_loader)):
-        x, y_ = x.to(device), y_.to(device)
-        with torch.no_grad():
-            out = model(x)
-            loss += F.cross_entropy(out, y_)
-            acc += (out.max(1)[1] == y_).sum().item() / len(y_)
-
-            adv_output, x_ = pgd(x, y_)
-            adv_loss += F.cross_entropy(adv_output, y_)
-            adv_acc += (adv_output.max(1)[1] == y_).sum().item() / len(y_)
-
-    logger.log_test(epoch, loss/len(tst_loader), acc/len(tst_loader)*100)
-    logger.log_test_adversarial(
-        epoch, adv_loss/len(tst_loader), adv_acc/len(tst_loader)*100)
 
 
 if __name__ == "__main__":
