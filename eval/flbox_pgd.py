@@ -30,7 +30,6 @@ def main():
     # config
     args = parse_args()
     cnfg = utils.parse_config(args.config)
-    print(cnfg)
     # data
     _, tst_loader = get_datasets(cnfg['data']['flag'],
                                  cnfg['data']['dir'],
@@ -39,15 +38,14 @@ def main():
     # initialization
     utils.set_seed(cnfg['seed'])
     # logger = Logger(cnfg)
-    model = utils.get_model(cnfg['model'])
-
+    model = utils.get_model(cnfg['model']).cuda()
     checkpoint = torch.load(cnfg['resume']['path'])
-    model.load_state_dict(checkpoint['model'])
-    model.cuda()
+    state = checkpoint['model'] if 'model' in checkpoint else checkpoint
+    model.load_state_dict(state)
+    model.float()
     model.eval()
 
     preproc = dict(mean=mean, std=std, axis=-3)
-
     fmodel = fbn.models.PyTorchModel(
         model, bounds=(0, 1), preprocessing=preproc)
 
@@ -56,9 +54,9 @@ def main():
     acc = 0
     for _, (x, y_) in enumerate(tst_loader):
         x, y_ = x.cuda(), y_.cuda()
-        adversarials = pgd(x, y_, epsilon=8./255.,
-                           step_size=2./255.,
-                           num_steps=STEPS)
+        adversarials = pgd(x, y_, epsilon=cnfg['pgd']['epsilon']/255.,
+                           step_size=cnfg['pgd']['alpha']/255.,
+                           num_steps=cnfg['pgd']['iter'])
         tmp = fbn.utils.accuracy(fmodel, adversarials, y_)
         acc += tmp
 

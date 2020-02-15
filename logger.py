@@ -15,23 +15,23 @@ class Logger:
         else:
             self.dowandb = False
 
-    def log_train(self, epoch, loss, accuracy, label):
-        print("\n[INFO][TRAIN][{}] \t Train results: \t \
+    def log_train(self, epoch, loss, accuracy, label='train'):
+        print("\n[INFO][TRAIN][{}] \t \
            Loss:  {}, \t Acc: {}".format(label, loss, accuracy))
         if self.dowandb:
             wandb.log({'Train Loss': loss}, commit=False, step=epoch)
             wandb.log({'Train Accuracy': accuracy}, commit=False, step=epoch)
 
-    def log_test(self, step, loss, accuracy, label):
-        print("[INFO][TEST][{}] \t Test results: \t \
+    def log_test(self, step, loss, accuracy, label='test'):
+        print("[INFO][TEST][{}] \t  \
            Loss:  {}, \t Acc: {} \n".format(label, loss, accuracy))
         if self.dowandb:
             wandb.log({'Test Loss': loss}, commit=False, step=step)
             wandb.log({'Test Accuracy': accuracy}, commit=False, step=step)
 
-    def log_test_adversarial(self, step, loss, accuracy, label):
-        print("[INFO][TEST][{}] \t Test Adversarial results: \t \
-           Loss:  {}, \t Acc: {} \n".format(label, loss, accuracy))
+    def log_test_adversarial(self, step, loss, accuracy, label='test_adversarial'):
+        print("[INFO][TEST][{}] \t \
+           Adv Loss:  {}, \t Adv Acc: {} \n".format(label, loss, accuracy))
         if self.dowandb:
             wandb.log({'Test Adversarial Loss': loss}, commit=False, step=step)
             wandb.log({'Test Adversarial Accuracy': accuracy},

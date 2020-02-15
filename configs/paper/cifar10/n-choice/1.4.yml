@@ -4,19 +4,19 @@ gpu: 'cuda:1'
 
 model:
   custom: true
-  arch: 'ResNet34'
+  arch: 'ResNet18'
   tvision:
-    name: 'resnet34'
+    name: 'resnet18'
     args: {}
 
 data:
-  flag: '100'
+  flag: '10'
   dir: './cifar-data'
   batch_size: 128
 
 
 train:
-  epochs: 300
+  epochs: 150
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
@@ -27,6 +27,20 @@ train:
   weight_decay: 0.00005
   momentum: 0.9
 
+test: 1
+
+mixed:
+  every_n: false
+  adv_epochs: 25
+
+
+pgd:
+  epsilon: 8.
+  alpha: 2.
+  iter: 7
+  restarts: 1
+  delta-init: 'random'
+
 opt:
   level: 'O2'
   loss_scale: 1.0
@@ -34,8 +48,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'CIFAR100N'
-  run: 'RESNET34'
+  project: 'ADV_WARM'
+  run: 'ResNet-Warm-N-1.4'
 
 save:
   epochs: 50

@@ -1,6 +1,8 @@
 import torch
 from torchvision import datasets, transforms
 
+smean = ['0.4914', '0.4822', '0.4465']
+sstd = ['0.2471', '0.2435', '0.2616']
 mean = (0.4914, 0.4822, 0.4465)
 std = (0.2471, 0.2435, 0.2616)
 

@@ -49,6 +49,8 @@ def eval_pgd(model, device, criterion, inpt, target, epsilon, alpha, iter,
 
         for _ in range(iter):
             output = model(inpt+delta)
+            # perturb only inputs that get correctly
+            # classified
             index = torch.where(output.max(1)[1] == target)
             loss = F.cross_entropy(output, target)
             # loss = criterion(output, target)
@@ -82,13 +84,19 @@ def clamp(X, lower_limit, upper_limit):
 def get_limits(dev):
     mu = torch.tensor(mean).view(3, 1, 1).to(dev)
     stdd = torch.tensor(std).view(3, 1, 1).to(dev)
-    upper_limit = ((1 - mu) / stdd)
-    lower_limit = ((0 - mu) / stdd)
+    upper_limit = ((1. - mu) / stdd)
+    lower_limit = ((0. - mu) / stdd)
     return lower_limit, upper_limit
 
 
 def get_eps_alph(epsilon, alpha, dev):
     stdd = torch.tensor(std).view(3, 1, 1).to(dev)
-    epsilon = (epsilon / 255.) / stdd
-    alpha = (alpha / 255.) / stdd
-    return epsilon, alpha
+    eps = (epsilon / 255.) / stdd
+    alph = (alpha / 255.) / stdd
+    # print(eps, alph)
+    # eps = torch.tensor((epsilon / 255., epsilon / 255.,
+    #                     epsilon / 255.)).view(3, 1, 1).to(dev)
+    # alph = torch.tensor((alpha / 255., alpha / 255.,
+    #                      alpha / 255.)).view(3, 1, 1).to(dev)
+    # print(eps, alph)
+    return eps, alph

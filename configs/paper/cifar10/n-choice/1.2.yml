@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
@@ -16,7 +16,7 @@ data:
 
 
 train:
-  epochs: 200
+  epochs: 150
   lr: 0.1
   lr_scheduler: 'multistep'
   step: 100
@@ -31,7 +31,7 @@ test: 1
 
 mixed:
   every_n: false
-  adv_epochs: 25
+  adv_epochs: 50
 
 
 pgd:
@@ -48,8 +48,8 @@ opt:
 
 logger:
   wandb: true
-  project: 'ADV_WARM-3'
-  run: 'ResNet-Warm'
+  project: 'ADV_WARM'
+  run: 'ResNet-N-1.2'
 
 save:
   epochs: 50

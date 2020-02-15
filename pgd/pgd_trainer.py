@@ -1,7 +1,9 @@
 import apex.amp as amp
 import torch
+import torch.nn.functional as F
 from tqdm import tqdm
 import pgd.attack as pgd
+from clean.trainer import test as test_clean
 import utils
 
 
@@ -41,11 +43,10 @@ def train(epoch, model, criterion, opt, scheduler, cnfg,
 
 
 def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt, doamp=True):
-    tst_loss, adv_loss, tst_acc, adv_acc = 0, 0, 0, 0
+    loss, acc = 0, 0
     model.eval()
     l_limit, u_limit = pgd.get_limits(device)
     for batch_idx, (inpt, targets) in enumerate(tst_loader):
-        print('[INFO][PGD-TEST] Batch: {}'.format(batch_idx))
         inpt, targets = inpt.to(device), targets.to(device)
         pgd_delta = pgd.eval_pgd(model, device, criterion, inpt, targets,
                                  cnfg['pgd']['epsilon'],
@@ -54,20 +55,11 @@ def test(epoch, model, tst_loader,  criterion, device, logger, cnfg, opt, doamp=
                                  cnfg['pgd']['restarts'],
                                  l_limit, u_limit, opt, doamp=doamp)
         with torch.no_grad():
-            # normal measurements
-            output = model(inpt)
-            loss = criterion(output, targets)
-            tst_loss += loss.item()
-            tst_acc += (output.max(1)[1] ==
-                        targets).sum().item() / len(targets)
-            # adversarial
             adv_output = model(inpt+pgd_delta)
-            adv_loss = criterion(output, targets)
-            adv_loss += adv_loss.item()
-            adv_acc += (adv_output.max(1)[1] ==
-                        targets).sum().item() / len(targets)
-
-    logger.log_test(epoch, tst_loss/len(tst_loader),
-                    (tst_acc/len(tst_loader))*100, "clean_testing")
-    logger.log_test_adversarial(epoch, adv_loss/len(tst_loader),
-                                (adv_acc/len(tst_loader))*100, "pgd_testing")
+            adv_loss = F.cross_entropy(adv_output, targets)
+            loss += adv_loss.item()
+            acc += (adv_output.max(1)[1] ==
+                    targets).sum().item() / len(targets)
+    logger.log_test_adversarial(epoch, loss/len(tst_loader),
+                                (acc/len(tst_loader))*100, "pgd_testing")
+    test_clean(epoch, model, tst_loader, criterion, device, logger)

@@ -5,12 +5,13 @@ gpu: 'cuda:0'
 model:
   custom: true
   arch: 'ResNet18'
+  kwargs: {'num_classes': 100}
   tvision:
     name: 'resnet18'
     args: {}
 
 data:
-  flag: '10'
+  flag: '100'
   dir: './cifar-data'
   batch_size: 128
 
@@ -26,19 +27,23 @@ train:
   lr_max: 0.2
   weight_decay: 0.00005
   momentum: 0.9
+  batch_replay: 8
 
-test: 1
+test: 50
 
-mixed:
-  every_n: false
-  adv_epochs: 25
+resume:
+  path: './models/ADV_WARM_ResNet-Fast-100_199.pth'
 
+fgsm:
+  epsilon: 8.
+  alpha: 10.
+  delta-init: 'random'
 
 pgd:
   epsilon: 8.
   alpha: 2.
-  iter: 7
-  restarts: 1
+  iter: 20
+  restarts: 10
   delta-init: 'random'
 
 opt:
@@ -47,9 +52,9 @@ opt:
   store: true
 
 logger:
-  wandb: true
-  project: 'ADV_WARM-3'
-  run: 'ResNet-Warm'
+  wandb: false
+  project: 'ADV_WARM'
+  run: 'ResNet-Fast-100'
 
 save:
   epochs: 50

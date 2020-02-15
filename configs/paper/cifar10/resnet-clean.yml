@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
@@ -26,7 +26,7 @@ train:
   weight_decay: 0.00005
   momentum: 0.9
 
-test: 50
+test: 10
 
 pgd:
   epsilon: 8.
@@ -42,7 +42,7 @@ opt:
 
 logger:
   wandb: true
-  project: 'ADV_WARM'
+  project: 'ADV_WARM-3'
   run: 'ResNet-Clean'
 
 save:

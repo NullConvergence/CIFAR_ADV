@@ -33,7 +33,7 @@ test: 50
 
 mixed:
   every_n: false
-  adv_epochs: 50
+  adv_epochs: 25
 
 pgd:
   epsilon: 8.
@@ -50,7 +50,7 @@ opt:
 logger:
   wandb: true
   project: 'ADV_WARM'
-  run: 'ResNet-Free-Warm-100'
+  run: 'ResNet-Free-Warm-100-1.4'
 
 save:
   epochs: 50

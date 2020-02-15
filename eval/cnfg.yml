@@ -1,6 +1,6 @@
 seed: 0
 
-gpu: 'cuda:0'
+gpu: 'cuda:1'
 
 model:
   custom: true
@@ -12,7 +12,7 @@ model:
 data:
   flag: '10'
   dir: './cifar-data'
-  batch_size: 128
+  batch_size: 32
 
 
 train:
@@ -31,7 +31,7 @@ mixed:
   adv_epochs: 50
 
 resume:
-  path: './models/MIXED_RESNET18_CYCLIC.pth'
+  path: './models/ADV_WARM_ResNet-Madry_199.pth'
 
 pgd:
   epsilon: 8.

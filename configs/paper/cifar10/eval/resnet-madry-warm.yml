@@ -40,8 +40,8 @@ mixed:
 pgd:
   epsilon: 8.
   alpha: 2.
-  iter: 20
-  restarts: 10
+  iter: 7
+  restarts: 1
   delta-init: 'random'
 
 opt:
